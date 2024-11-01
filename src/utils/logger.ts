@@ -1,11 +1,3 @@
-// src/utils/logger.ts
-enum LogLevel {
-  ERROR = "error",
-  WARN = "warn",
-  INFO = "info",
-  DEBUG = "debug",
-}
-
 export class Logger {
   private context: string;
 

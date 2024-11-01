@@ -1,48 +1,47 @@
 import { DatabaseService } from "../../../src/services/databaseService";
-import { mockPrismaClient } from "../../setup";
+import { createMockContext, MockContext, prismaMock } from "../../setup";
 
 describe("DatabaseService", () => {
+  let mockCtx: MockContext;
+  let dbService: DatabaseService;
+
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
 
+    mockCtx = createMockContext();
+    dbService = new DatabaseService();
+    // Inject our mock
+    (dbService as any).prisma = mockCtx.prisma;
+
     // Setup default successful responses
-    mockPrismaClient.$queryRaw.mockResolvedValue([{ "1": 1 }]);
-    mockPrismaClient.$disconnect.mockResolvedValue(undefined);
+    mockCtx.prisma.$queryRaw.mockResolvedValue([{ "1": 1 }]);
+    mockCtx.prisma.$disconnect.mockResolvedValue(undefined);
   });
 
   describe("connection", () => {
-    let dbService: DatabaseService;
-
-    beforeEach(() => {
-      dbService = new DatabaseService();
-    });
-
     afterEach(async () => {
       await dbService.disconnect();
     });
 
     it("should connect to the database", async () => {
       const isConnected = await dbService.connect();
-
       expect(isConnected).toBe(true);
       expect(dbService.isConnected()).toBe(true);
-      expect(mockPrismaClient.$queryRaw).toHaveBeenCalled();
+      expect(mockCtx.prisma.$queryRaw).toHaveBeenCalled();
     });
 
     it("should disconnect from the database", async () => {
       await dbService.connect();
       await dbService.disconnect();
-
       expect(dbService.isConnected()).toBe(false);
-      expect(mockPrismaClient.$disconnect).toHaveBeenCalled();
+      expect(mockCtx.prisma.$disconnect).toHaveBeenCalled();
     });
 
     it("should handle connection errors gracefully", async () => {
-      mockPrismaClient.$queryRaw.mockRejectedValueOnce(
+      mockCtx.prisma.$queryRaw.mockRejectedValueOnce(
         new Error("Connection failed"),
       );
-
       await expect(dbService.connect()).rejects.toThrow(
         "Database connection failed",
       );
@@ -51,12 +50,6 @@ describe("DatabaseService", () => {
   });
 
   describe("health check", () => {
-    let dbService: DatabaseService;
-
-    beforeEach(() => {
-      dbService = new DatabaseService();
-    });
-
     afterEach(async () => {
       await dbService.disconnect();
     });
@@ -74,9 +67,7 @@ describe("DatabaseService", () => {
 
     it("should return false when database query fails", async () => {
       await dbService.connect();
-      mockPrismaClient.$queryRaw.mockRejectedValueOnce(
-        new Error("Query failed"),
-      );
+      mockCtx.prisma.$queryRaw.mockRejectedValueOnce(new Error("Query failed"));
       const isHealthy = await dbService.healthCheck();
       expect(isHealthy).toBe(false);
     });

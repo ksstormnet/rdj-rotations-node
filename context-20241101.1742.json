@@ -1,0 +1,98 @@
+{
+  "files": [
+    {
+      "name": "jest.config.ts",
+      "content": "import type { Config } from '@jest/types';\n\nconst config: Config.InitialOptions = {\n  preset: 'ts-jest',\n  testEnvironment: 'node',\n  roots: ['<rootDir>/src', '<rootDir>/tests'],\n  testMatch: [\n    '**/__tests__/**/*.+(ts|tsx|js)',\n    '**/?(*.)+(spec|test).+(ts|tsx|js)'\n  ],\n  transform: {\n    '^.+\\.(ts|tsx)$': 'ts-jest'\n  },\n  coverageDirectory: 'coverage',\n  coverageReporters: ['text', 'lcov'],\n  coverageThreshold: {\n    global: {\n      branches: 80,\n      functions: 80,\n      lines: 80,\n      statements: 80\n    }\n  },\n  moduleNameMapper: {\n    '^@/(.*)$': '<rootDir>/src/$1'\n  },\n  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],\n  clearMocks: true,\n  maxWorkers: '50%',\n  collectCoverageFrom: [\n    'src/**/*.{js,ts}',\n    '!src/**/*.d.ts',\n    '!src/**/*.config.ts'\n  ]\n};\n\nexport default config;"
+    },
+    {
+      "name": "tsconfig.json",
+      "content": "{\n  \"compilerOptions\": {\n    \"target\": \"es2016\",\n    \"module\": \"commonjs\",\n    \"esModuleInterop\": true,\n    \"forceConsistentCasingInFileNames\": true,\n    \"strict\": true,\n    \"skipLibCheck\": true,\n    \"outDir\": \"./dist\",\n    \"rootDir\": \".\",\n    \"types\": [\"jest\", \"node\"],\n    \"moduleResolution\": \"node\"\n  },\n  \"include\": [\"src/**/*\", \"tests/**/*\"],\n  \"exclude\": [\"node_modules\"]\n}"
+    },
+    {
+      "name": "tests/setup.ts",
+      "content": "import * as dotenv from 'dotenv';\nimport { PrismaClient } from '@prisma/client';\nimport { mockDeep, mockReset } from 'jest-mock-extended';\n\ndotenv.config({ path: '.env.test' });\n\nexport const mockPrismaClient = {\n  $queryRaw: jest.fn(),\n  $disconnect: jest.fn()\n};\n\njest.mock('@prisma/client', () => ({\n  PrismaClient: jest.fn(() => mockPrismaClient)\n}));\n\nbeforeEach(() => {\n  jest.clearAllMocks();\n});\n\nbeforeAll(() => {\n  process.env.NODE_ENV = 'test';\n});\n\nafterAll(async () => {\n});\n\nexpect.extend({\n  toBeWithinRange(received: number, floor: number, ceiling: number) {\n    const pass = received >= floor && received <= ceiling;\n    if (pass) {\n      return {\n        message: () =>\n          `expected ${received} not to be within range ${floor} - ${ceiling}`,\n        pass: true,\n      };\n    } else {\n      return {\n        message: () =>\n          `expected ${received} to be within range ${floor} - ${ceiling}`,\n        pass: false,\n      };\n    }\n  },\n});"
+    },
+    {
+      "name": ".env.test",
+      "content": "# Database\nDATABASE_URL=\"mysql://test:test@localhost:3306/radiodj_test\"\n\n# Application\nNODE_ENV=test\nAPP_PORT=3001\n\n# Logging\nLOG_LEVEL=error\n\n# Backup Configuration\nBACKUP_DIR=\"./backups/test\"\nBACKUP_RETENTION_DAYS=1\n\n# Security\nJWT_SECRET=\"test-secret-key-change-in-production\""
+    },
+    {
+      "name": "src/services/databaseService.ts",
+      "content": "import { PrismaClient } from '@prisma/client';\nimport { Logger } from '../utils/logger';\n\nexport class DatabaseService {\n  private prisma: PrismaClient;\n  private connected: boolean = false;\n  private readonly logger: Logger;\n\n  constructor() {\n    this.prisma = new PrismaClient({\n      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],\n    });\n    this.logger = new Logger('DatabaseService');\n  }\n\n  async connect(): Promise<boolean> {\n    try {\n      await this.prisma.$queryRaw`SELECT 1`;\n      this.connected = true;\n      this.logger.info('Successfully connected to database');\n      return true;\n    } catch (error) {\n      this.connected = false;\n      this.logger.error('Failed to connect to database', error);\n      throw new Error(`Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);\n    }\n  }\n\n  async disconnect(): Promise<void> {\n    try {\n      await this.prisma.$disconnect();\n      this.connected = false;\n      this.logger.info('Successfully disconnected from database');\n    } catch (error) {\n      this.logger.error('Error disconnecting from database', error);\n      throw new Error(`Database disconnection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);\n    }\n  }\n\n  isConnected(): boolean {\n    return this.connected;\n  }\n\n  async healthCheck(): Promise<boolean> {\n    try {\n      if (!this.connected) {\n        return false;\n      }\n      await this.prisma.$queryRaw`SELECT 1`;\n      return true;\n    } catch (error) {\n      this.logger.error('Health check failed', error);\n      return false;\n    }\n  }\n\n  getPrismaClient(): PrismaClient {\n    if (!this.connected) {\n      throw new Error('Database is not connected');\n    }\n    return this.prisma;\n  }\n}"
+    },
+    {
+      "name": "src/utils/logger.ts",
+      "content": "enum LogLevel {\n  ERROR = 'error',\n  WARN = 'warn',\n  INFO = 'info',\n  DEBUG = 'debug'\n}\n\nexport class Logger {\n  private context: string;\n\n  constructor(context: string) {\n    this.context = context;\n  }\n\n  private shouldLog(): boolean {\n    return process.env.NODE_ENV !== 'test';\n  }\n\n  error(message: string, error?: unknown): void {\n    if (this.shouldLog()) {\n      console.error(`[ERROR] ${this.context}: ${message}`, error || '');\n    }\n  }\n\n  warn(message: string): void {\n    if (this.shouldLog()) {\n      console.warn(`[WARN] ${this.context}: ${message}`);\n    }\n  }\n\n  info(message: string): void {\n    if (this.shouldLog()) {\n      console.info(`[INFO] ${this.context}: ${message}`);\n    }\n  }\n\n  debug(message: string): void {\n    if (this.shouldLog() && process.env.NODE_ENV === 'development') {\n      console.debug(`[DEBUG] ${this.context}: ${message}`);\n    }\n  }\n}"
+    },
+    {
+      "name": "tests/unit/services/databaseService.test.ts",
+      "content": "import { DatabaseService } from '../../../src/services/databaseService';\nimport { mockPrismaClient } from '../../setup';\n\ndescribe('DatabaseService', () => {\n  beforeEach(() => {\n    jest.clearAllMocks();\n    \n    mockPrismaClient.$queryRaw.mockResolvedValue([{ '1': 1 }]);\n    mockPrismaClient.$disconnect.mockResolvedValue(undefined);\n  });\n\n  describe('connection', () => {\n    let dbService: DatabaseService;\n\n    beforeEach(() => {\n      dbService = new DatabaseService();\n    });\n\n    afterEach(async () => {\n      await dbService.disconnect();\n    });\n\n    it('should connect to the database', async () => {\n      const isConnected = await dbService.connect();\n      \n      expect(isConnected).toBe(true);\n      expect(dbService.isConnected()).toBe(true);\n      expect(mockPrismaClient.$queryRaw).toHaveBeenCalled();\n    });\n\n    it('should disconnect from the database', async () => {\n      await dbService.connect();\n      await dbService.disconnect();\n      \n      expect(dbService.isConnected()).toBe(false);\n      expect(mockPrismaClient.$disconnect).toHaveBeenCalled();\n    });\n\n    it('should handle connection errors gracefully', async () => {\n      mockPrismaClient.$queryRaw.mockRejectedValueOnce(new Error('Connection failed'));\n      \n      await expect(dbService.connect()).rejects.toThrow('Database connection failed');\n      expect(dbService.isConnected()).toBe(false);\n    });\n  });\n\n  describe('health check', () => {\n    let dbService: DatabaseService;\n\n    beforeEach(() => {\n      dbService = new DatabaseService();\n    });\n\n    afterEach(async () => {\n      await dbService.disconnect();\n    });\n\n    it('should return true when database is healthy', async () => {\n      await dbService.connect();\n      const isHealthy = await dbService.healthCheck();\n      expect(isHealthy).toBe(true);\n    });\n\n    it('should return false when database is not connected', async () => {\n      const isHealthy = await dbService.healthCheck();\n      expect(isHealthy).toBe(false);\n    });\n\n    it('should return false when database query fails', async () => {\n      await dbService.connect();\n      mockPrismaClient.$queryRaw.mockRejectedValueOnce(new Error('Query failed'));\n      const isHealthy = await dbService.healthCheck();\n      expect(isHealthy).toBe(false);\n    });\n  });\n});"
+    }
+  ],
+  "tree": [
+    {
+      "type": "file",
+      "name": "jest.config.ts"
+    },
+    {
+      "type": "file",
+      "name": "tsconfig.json"
+    },
+    {
+      "type": "directory",
+      "name": "tests",
+      "children": [
+        {
+          "type": "file",
+          "name": "setup.ts"
+        },
+        {
+          "type": "directory",
+          "name": "unit",
+          "children": [
+            {
+              "type": "directory",
+              "name": "services",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "databaseService.test.ts"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "file",
+      "name": ".env.test"
+    },
+    {
+      "type": "directory",
+      "name": "src",
+      "children": [
+        {
+          "type": "directory",
+          "name": "services",
+          "children": [
+            {
+              "type": "file",
+              "name": "databaseService.ts"
+            }
+          ]
+        },
+        {
+          "type": "directory",
+          "name": "utils",
+          "children": [
+            {
+              "type": "file",
+              "name": "logger.ts"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

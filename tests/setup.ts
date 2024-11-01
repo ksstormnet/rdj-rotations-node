@@ -1,22 +1,19 @@
 import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-import { mockDeep, mockReset } from "jest-mock-extended";
+import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended";
 
 // Load test environment variables
 dotenv.config({ path: ".env.test" });
 
-// Mock PrismaClient
-export const mockPrismaClient = {
-  $queryRaw: jest.fn(),
-  $disconnect: jest.fn(),
-};
+// Create a deep mock of PrismaClient
+const prismaMock = mockDeep<PrismaClient>({
+  $on: jest.fn(), // Add the $on method we need
+});
 
+// Mock the PrismaClient constructor
 jest.mock("@prisma/client", () => ({
-  PrismaClient: jest.fn(() => mockPrismaClient),
+  PrismaClient: jest.fn(() => prismaMock),
 }));
-
-// Create a mock instance of PrismaClient
-const prismaMock = mockDeep<PrismaClient>();
 
 beforeEach(() => {
   mockReset(prismaMock);
@@ -24,9 +21,18 @@ beforeEach(() => {
 
 export { prismaMock };
 
+// Type for mocked context
+export type MockContext = {
+  prisma: DeepMockProxy<PrismaClient>;
+};
+
+// Helper to create mock context
+export const createMockContext = (): MockContext => ({
+  prisma: prismaMock,
+});
+
 // Global test setup
 beforeAll(() => {
-  // Add any global setup here
   process.env.NODE_ENV = "test";
 });
 
@@ -35,7 +41,7 @@ afterAll(async () => {
   // Add any global cleanup here
 });
 
-// Add custom matchers if needed
+// Custom matchers
 expect.extend({
   toBeWithinRange(received: number, floor: number, ceiling: number) {
     const pass = received >= floor && received <= ceiling;

@@ -17,7 +17,11 @@
   "license": "ISC",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:watch": "jest --watch",
+    "test:unit:watch": "jest tests/unit --watch",
+    "test:integration:watch": "jest tests/integration --watch"
   },
   "description": "",
   "dependencies": {

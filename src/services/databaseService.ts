@@ -1,19 +1,27 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { Logger } from "../utils/logger";
 
 export class DatabaseService {
   private prisma: PrismaClient;
   private connected: boolean = false;
-  private readonly logger: Logger;
+  private readonly logger = new Logger("DatabaseService"); // Initialize directly
 
   constructor() {
+    // Completely disable all Prisma logging in test mode
     this.prisma = new PrismaClient({
+      errorFormat: "minimal", // Reduce error verbosity
       log:
-        process.env.NODE_ENV === "development"
-          ? ["query", "error", "warn"]
-          : ["error"],
+        process.env.NODE_ENV === "test"
+          ? []
+          : [
+              { emit: "event", level: "error" }, // Only log errors in non-test
+            ],
     });
-    this.logger = new Logger("DatabaseService");
+
+    // Only set up error handler
+    this.prisma.$on("error" as never, (event: Prisma.LogEvent) => {
+      this.logger.error("Database error occurred", event);
+    });
   }
 
   async connect(): Promise<boolean> {
