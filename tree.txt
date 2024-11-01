@@ -1,0 +1,8 @@
+.
+├── package.json
+├── package-lock.json
+├── prisma
+│   └── schema.prisma
+└── tree.txt
+
+2 directories, 4 files
