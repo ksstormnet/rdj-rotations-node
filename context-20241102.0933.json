@@ -1,0 +1,109 @@
+{
+  "projectStatus": {
+    "phase": "Business Rules/Domain Layer Implementation",
+    "currentFocus": "Core business rules for radio rotation patterns and validation",
+    "completedSetup": [
+      "Database models and schema",
+      "Basic repository layer",
+      "Database service layer"
+    ]
+  },
+  "existingStructure": {
+    "models": {
+      "category.ts": "Defines valid categories and Category class",
+      "subcategory.ts": "Defines Subcategory class with code extraction",
+      "rotation.ts": "Referenced but not shown",
+      "rotationList.ts": "Referenced but not shown"
+    },
+    "services": {
+      "databaseService.ts": "Handles database connections and Prisma client",
+      "rotationDisplayService.ts": "Displays rotation information"
+    },
+    "repositories": {
+      "rotationRepository.ts": "Handles rotation data access"
+    }
+  },
+  "newlyCreatedFiles": {
+    "models": [
+      "src/models/pattern.ts",
+      "src/models/commercialPattern.ts",
+      "src/models/rotationTemplate.ts"
+    ],
+    "services": [
+      "src/services/patternSelector.ts",
+      "src/services/rotationBuilder.ts",
+      "src/services/rotationValidator.ts"
+    ],
+    "tests": [
+      "tests/unit/models/pattern.test.ts",
+      "tests/unit/models/commercialPattern.test.ts",
+      "tests/unit/models/rotationTemplate.test.ts",
+      "tests/unit/services/patternSelector.test.ts",
+      "tests/unit/services/rotationBuilder.test.ts",
+      "tests/unit/services/rotationValidator.test.ts"
+    ]
+  },
+  "plannedImplementation": {
+    "models": {
+      "pattern.ts": {
+        "enums": ["MusicSetPattern"],
+        "interfaces": ["PatternSlot"],
+        "purpose": "Define music set patterns and slot constraints"
+      },
+      "commercialPattern.ts": {
+        "enums": ["CommercialPattern"],
+        "purpose": "Define valid commercial break patterns"
+      },
+      "rotationTemplate.ts": {
+        "interfaces": ["RotationHourTemplate"],
+        "purpose": "Define structure of a complete rotation hour"
+      }
+    },
+    "development": {
+      "approach": "TDD",
+      "nextStep": "Implement pattern.test.ts",
+      "sequence": [
+        "Pattern definitions and constraints",
+        "Commercial break patterns",
+        "Full rotation template",
+        "Pattern selection logic",
+        "Rotation building logic",
+        "Validation rules"
+      ]
+    }
+  },
+  "businessRules": {
+    "rotationStructure": {
+      "required": [
+        "Opening track (CE, CM, CL, or M)",
+        "TOH Promo",
+        "Station ID",
+        "3 music sets",
+        "2 commercial breaks"
+      ]
+    },
+    "musicSetPatterns": {
+      "pattern1": {
+        "sequence": ["I", "Music", "Jingle", "Music", "Music", "Jingle", "Music"],
+        "constraints": [
+          "Can be used in either first or second set but not both",
+          "Must be used in second set if G or SD is in seventh position",
+          "Can be used in first set with PB or M in seventh position"
+        ]
+      },
+      "pattern2": {
+        "sequence": ["I", "Music", "Jingle", "Music", "Music", "Music", "Music"]
+      },
+      "pattern3": {
+        "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+      }
+    },
+    "commercialPatterns": {
+      "validPatterns": ["631", "633", "613", "63", "61", "331"],
+      "constraints": [
+        "Breaks must differ in length",
+        "At least one 15-second spot in second or third position"
+      ]
+    }
+  }
+}
