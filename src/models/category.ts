@@ -40,6 +40,6 @@ export class Category {
   }
 
   isValidCategoryName(): boolean {
-    return VALID_CATEGORIES.includes(this.name as ValidCategory);
+    return VALID_CATEGORIES.includes(this.name as ValidCategory)
   }
 }
