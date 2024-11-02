@@ -1,16 +1,16 @@
 export const VALID_CATEGORIES = [
-  "Music",
-  "Sound Effects",
-  "Sweepers",
-  "Station IDs",
-  "Jingles",
-  "Promos",
-  "Commercials",
-  "News",
-  "Interviews",
-  "Radio Shows",
-  "Radio Streams",
-  "Rotation Elements",
+  'Music',
+  'Sound Effects',
+  'Sweepers',
+  'Station IDs',
+  'Jingles',
+  'Promos',
+  'Commercials',
+  'News',
+  'Interviews',
+  'Radio Shows',
+  'Radio Streams',
+  'Rotation Elements',
 ] as const;
 
 export type ValidCategory = (typeof VALID_CATEGORIES)[number];
@@ -32,10 +32,10 @@ export class Category {
 
   private validateName(name: string): void {
     if (!name) {
-      throw new Error("Category name cannot be empty");
+      throw new Error('Category name cannot be empty');
     }
     if (name.length > 100) {
-      throw new Error("Category name cannot exceed 100 characters");
+      throw new Error('Category name cannot exceed 100 characters');
     }
   }
 

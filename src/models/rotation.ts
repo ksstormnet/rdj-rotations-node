@@ -15,7 +15,7 @@ export class Rotation {
 
   private validateProps(props: RotationProps): void {
     if (!props.name) {
-      throw new Error("Rotation name cannot be empty");
+      throw new Error('Rotation name cannot be empty');
     }
 
     if (!props.name.match(/^Hr [A-F]$/)) {
@@ -25,6 +25,6 @@ export class Rotation {
 
   // Get the hour letter (A-F)
   getHourLetter(): string {
-    return this.name.split(" ")[1];
+    return this.name.split(' ')[1];
   }
 }

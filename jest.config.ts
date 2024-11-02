@@ -1,19 +1,19 @@
 // jest.config.ts
-import type { Config } from "@jest/types";
+import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  preset: "ts-jest",
-  testEnvironment: "node",
-  roots: ["<rootDir>/src", "<rootDir>/tests"],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: [
-    "**/__tests__/**/*.+(ts|tsx|js)",
-    "**/?(*.)+(spec|test).+(ts|tsx|js)",
+    '**/__tests__/**/*.+(ts|tsx|js)',
+    '**/?(*.)+(spec|test).+(ts|tsx|js)',
   ],
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
+    '^.+\\.(ts|tsx)$': 'ts-jest',
   },
-  coverageDirectory: "coverage",
-  coverageReporters: ["text", "lcov"],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov'],
   coverageThreshold: {
     global: {
       branches: 80,
@@ -23,20 +23,20 @@ const config: Config.InitialOptions = {
     },
   },
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   clearMocks: true,
-  maxWorkers: "50%",
+  maxWorkers: '50%',
   collectCoverageFrom: [
-    "src/**/*.{js,ts}",
-    "!src/**/*.d.ts",
-    "!src/**/*.config.ts",
+    'src/**/*.{js,ts}',
+    '!src/**/*.d.ts',
+    '!src/**/*.config.ts',
   ],
   // Add these new settings for controlling output
   verbose: false,
   silent: true,
-  reporters: [["default", { verbosity: 0 }]],
+  reporters: [['default', { verbosity: 0 }]],
 };
 
 export default config;

@@ -1,5 +1,5 @@
-import { DatabaseService } from "./services/databaseService";
-import { RotationDisplayService } from "./services/rotationDisplayService";
+import { DatabaseService } from './services/databaseService';
+import { RotationDisplayService } from './services/rotationDisplayService';
 
 async function main() {
   const dbService = new DatabaseService();
@@ -7,7 +7,7 @@ async function main() {
 
   try {
     const display = new RotationDisplayService(dbService);
-    await display.displayRotation("Hr A");
+    await display.displayRotation('Hr A');
   } finally {
     await dbService.disconnect();
   }

@@ -5,6 +5,6 @@ export const mockPrismaClient = {
   $connect: jest.fn(),
 };
 
-export const prismaClientMock = jest.mock("@prisma/client", () => ({
+export const prismaClientMock = jest.mock('@prisma/client', () => ({
   PrismaClient: jest.fn(() => mockPrismaClient),
 }));

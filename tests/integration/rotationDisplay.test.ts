@@ -1,11 +1,11 @@
 // tests/integration/rotationDisplay.test.ts
-import { DatabaseService } from "../../src/services/databaseService";
-import { RotationRepository } from "../../src/repositories/rotationRepository";
-import { RotationDisplayService } from "../../src/services/rotationDisplayService";
+import { DatabaseService } from '../../src/services/databaseService';
+import { RotationRepository } from '../../src/repositories/rotationRepository';
+import { RotationDisplayService } from '../../src/services/rotationDisplayService';
 
-jest.unmock("@prisma/client");
+jest.unmock('@prisma/client');
 
-describe("Rotation Display Integration", () => {
+describe('Rotation Display Integration', () => {
   let dbService: DatabaseService;
   let rotationRepo: RotationRepository;
   let displayService: RotationDisplayService;
@@ -21,20 +21,20 @@ describe("Rotation Display Integration", () => {
     await dbService.disconnect();
   });
 
-  it("should fetch rotation Hr A with items", async () => {
-    const rotation = await rotationRepo.getRotationByName("Hr A");
+  it('should fetch rotation Hr A with items', async () => {
+    const rotation = await rotationRepo.getRotationByName('Hr A');
     expect(rotation).not.toBeNull();
-    expect(rotation?.name).toBe("Hr A");
+    expect(rotation?.name).toBe('Hr A');
 
     if (rotation) {
       const items = await rotationRepo.getRotationItems(rotation.ID);
 
       if (process.env.DEBUG) {
-        console.log("\nRotation Hr A Structure:");
-        console.log("-----------------------");
+        console.log('\nRotation Hr A Structure:');
+        console.log('-----------------------');
         items.forEach((item) => {
           console.log(
-            `${item.ord}: Category ${item.catID}, Subcategory ${item.subID} - ${item.data}`,
+            `${item.ord}: Category ${item.catID}, Subcategory ${item.subID} - ${item.data}`
           );
         });
       }
@@ -48,13 +48,13 @@ describe("Rotation Display Integration", () => {
     }
   });
 
-  it("should handle non-existent rotation name", async () => {
-    const rotation = await rotationRepo.getRotationByName("Hr X");
+  it('should handle non-existent rotation name', async () => {
+    const rotation = await rotationRepo.getRotationByName('Hr X');
     expect(rotation).toBeNull();
   });
 
-  it("should find all rotation hours A through F", async () => {
-    const hourNames = ["Hr A", "Hr B", "Hr C", "Hr D", "Hr E", "Hr F"];
+  it('should find all rotation hours A through F', async () => {
+    const hourNames = ['Hr A', 'Hr B', 'Hr C', 'Hr D', 'Hr E', 'Hr F'];
 
     for (const name of hourNames) {
       const rotation = await rotationRepo.getRotationByName(name);
@@ -63,8 +63,8 @@ describe("Rotation Display Integration", () => {
     }
   });
 
-  it("should have a consistent number of items in each rotation", async () => {
-    const hourNames = ["Hr A", "Hr B", "Hr C", "Hr D", "Hr E", "Hr F"];
+  it('should have a consistent number of items in each rotation', async () => {
+    const hourNames = ['Hr A', 'Hr B', 'Hr C', 'Hr D', 'Hr E', 'Hr F'];
     const itemCounts = new Map<string, number>();
 
     for (const name of hourNames) {

@@ -74,29 +74,29 @@ export class RotationList {
 
   private validateProps(props: RotationListProps): void {
     if (props.ord < 0) {
-      throw new Error("Order must be non-negative");
+      throw new Error('Order must be non-negative');
     }
 
     if (props.pID <= 0) {
-      throw new Error("Parent rotation ID must be positive");
+      throw new Error('Parent rotation ID must be positive');
     }
 
     if (props.catID <= 0) {
-      throw new Error("Category ID must be positive");
+      throw new Error('Category ID must be positive');
     }
 
     if (props.subID <= 0) {
-      throw new Error("Subcategory ID must be positive");
+      throw new Error('Subcategory ID must be positive');
     }
 
     // Validate repeatRule is either 'True' or 'False'
-    if (props.repeatRule !== "True" && props.repeatRule !== "False") {
+    if (props.repeatRule !== 'True' && props.repeatRule !== 'False') {
       throw new Error('RepeatRule must be either "True" or "False"');
     }
   }
 
   // Helper method to check if repeat is enabled
   isRepeatEnabled(): boolean {
-    return this.repeatRule === "True";
+    return this.repeatRule === 'True';
   }
 }

@@ -1,7 +1,7 @@
-import { RotationList } from "../../../src/models/rotationList";
+import { RotationList } from '../../../src/models/rotationList';
 
-describe("RotationList", () => {
-  it("should create a valid rotation list item", () => {
+describe('RotationList', () => {
+  it('should create a valid rotation list item', () => {
     const item = new RotationList({
       ID: 1,
       pID: 1, // parent rotation ID
@@ -9,8 +9,8 @@ describe("RotationList", () => {
       subID: 45, // subcategory ID
       genID: 0, // default genre ID
       ord: 0, // sequence in rotation
-      data: "CE", // shorthand label
-      repeatRule: "False",
+      data: 'CE', // shorthand label
+      repeatRule: 'False',
       selType: 0,
       sweeper: 0,
       track_separation: 0,
@@ -26,7 +26,7 @@ describe("RotationList", () => {
     expect(item.ord).toBe(0);
   });
 
-  it("should throw error for negative order", () => {
+  it('should throw error for negative order', () => {
     expect(
       () =>
         new RotationList({
@@ -36,15 +36,15 @@ describe("RotationList", () => {
           subID: 45,
           genID: 0,
           ord: -1,
-          data: "CE",
-          repeatRule: "False",
+          data: 'CE',
+          repeatRule: 'False',
           selType: 0,
           sweeper: 0,
           track_separation: 0,
           artist_separation: 0,
           title_separation: 0,
           album_separation: 0,
-        }),
-    ).toThrow("Order must be non-negative");
+        })
+    ).toThrow('Order must be non-negative');
   });
 });

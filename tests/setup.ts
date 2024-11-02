@@ -1,9 +1,9 @@
-import * as dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended";
+import * as dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
 
 // Load test environment variables
-dotenv.config({ path: ".env.test" });
+dotenv.config({ path: '.env.test' });
 
 // Create a deep mock of PrismaClient
 const prismaMock = mockDeep<PrismaClient>({
@@ -11,7 +11,7 @@ const prismaMock = mockDeep<PrismaClient>({
 });
 
 // Mock the PrismaClient constructor
-jest.mock("@prisma/client", () => ({
+jest.mock('@prisma/client', () => ({
   PrismaClient: jest.fn(() => prismaMock),
 }));
 
@@ -33,7 +33,7 @@ export const createMockContext = (): MockContext => ({
 
 // Global test setup
 beforeAll(() => {
-  process.env.NODE_ENV = "test";
+  process.env.NODE_ENV = 'test';
 });
 
 // Global test teardown

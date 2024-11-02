@@ -6,12 +6,12 @@ export class Logger {
   }
 
   private shouldLog(): boolean {
-    return process.env.NODE_ENV !== "test";
+    return process.env.NODE_ENV !== 'test';
   }
 
   error(message: string, error?: unknown): void {
     if (this.shouldLog()) {
-      console.error(`[ERROR] ${this.context}: ${message}`, error || "");
+      console.error(`[ERROR] ${this.context}: ${message}`, error || '');
     }
   }
 
@@ -28,7 +28,7 @@ export class Logger {
   }
 
   debug(message: string): void {
-    if (this.shouldLog() && process.env.NODE_ENV === "development") {
+    if (this.shouldLog() && process.env.NODE_ENV === 'development') {
       console.debug(`[DEBUG] ${this.context}: ${message}`);
     }
   }

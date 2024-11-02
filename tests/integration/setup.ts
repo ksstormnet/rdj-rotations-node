@@ -1,10 +1,10 @@
 // tests/integration/setup.ts
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 
-dotenv.config({ path: ".env.test" });
+dotenv.config({ path: '.env.test' });
 
 beforeAll(() => {
-  process.env.NODE_ENV = "test";
+  process.env.NODE_ENV = 'test';
 });
 
 afterAll(async () => {
