@@ -1,239 +1,297 @@
 {
-  "categories": [
-    {
-      "id": 1,
-      "name": "Music",
-      "subcategories": [
-        {
-          "id": 45,
-          "name": "CE - Core Early - 78 to 83"
-        },
-        {
-          "id": 46,
-          "name": "CM - Core Mid - 84 to 88"
-        },
-        {
-          "id": 47,
-          "name": "CL - Core Late - 89 to 93"
-        },
-        {
-          "id": 48,
-          "name": "I - Image"
-        },
-        {
-          "id": 49,
-          "name": "G - Pre-78"
-        },
-        {
-          "id": 50,
-          "name": "SCh - Christian"
-        },
-        {
-          "id": 51,
-          "name": "SCo - Country"
-        },
-        {
-          "id": 52,
-          "name": "SD - Disco"
-        },
-        {
-          "id": 53,
-          "name": "M - Modern - Post -94"
-        },
-        {
-          "id": 54,
-          "name": "SP - Pop"
-        },
-        {
-          "id": 55,
-          "name": "SR - Rock"
-        },
-        {
-          "id": 56,
-          "name": "PB - Power Ballad"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "name": "Station IDs",
-      "subcategories": [
-        {
-          "id": 41,
-          "name": "ID Jingle"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "name": "Jingles",
-      "subcategories": [
-        {
-          "id": 34,
-          "name": "tM - to Music"
-        },
-        {
-          "id": 35,
-          "name": "B - Between"
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "name": "Promos",
-      "subcategories": [
-        {
-          "id": 57,
-          "name": "TOH"
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "name": "Commercials",
-      "subcategories": [
-        {
-          "id": 30,
-          "name": "30"
-        },
-        {
-          "id": 31,
-          "name": "15"
-        },
-        {
-          "id": 32,
-          "name": "60"
-        }
-      ]
-    }
-  ],
-  "rules": {
-    "music_categories": {
-      "hour_start_categories": ["CE", "CM", "CL", "M"],
-      "required_per_hour": {
-        "CE": 2,
-        "CM": 2,
-        "CL": 2
+  "categories": {
+    "music": {
+      "image": {
+        "code": "I",
+        "description": "Image - Always begins a music set"
       },
-      "order_constraints": {
-        "date_based_after_jingle": false,
-        "back_to_back_SCo_SCh": false
-      },
-      "minimum_per_hour": {
-        "M": 1,
-        "G": 1,
-        "SCo_or_SCh": {
-          "combinations": [{ "SCo": 2 }, { "SCo": 1, "SCh": 1 }]
+      "dateBased": {
+        "G": {
+          "description": "Gold - Pre-1978",
+          "hourlyRequirement": {
+            "minimum": 1,
+            "maximum": 2,
+            "bothMaximumNotAllowedWith": "M"
+          }
+        },
+        "CE": {
+          "description": "Core Early - 1978-1983",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "CM": {
+          "description": "Core Mid - 1984-1988",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "CL": {
+          "description": "Core Late - 1989-1993",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "M": {
+          "description": "Modern - Post-1994",
+          "hourlyRequirement": {
+            "minimum": 1,
+            "maximum": 2,
+            "bothMaximumNotAllowedWith": "G"
+          }
         }
       },
-      "maximum_per_hour": {
-        "PB": 2,
-        "SD": 1
+      "soundBased": {
+        "SCo": {
+          "description": "Country",
+          "hourlyRequirement": {
+            "options": [
+              {
+                "count": 2,
+                "restrictions": ["noConsecutiveWithSCh"]
+              },
+              {
+                "count": 1,
+                "mustBeWithSCh": true
+              }
+            ]
+          }
+        },
+        "SCh": {
+          "description": "Christian",
+          "hourlyRequirement": {
+            "typical": 1,
+            "restrictions": ["noConsecutiveWithSCo"]
+          }
+        },
+        "SP": {
+          "description": "Pop",
+          "usage": "filler"
+        },
+        "SR": {
+          "description": "Rock",
+          "usage": "filler"
+        },
+        "SD": {
+          "description": "Disco/Bubblegum",
+          "hourlyRequirement": {
+            "maximum": 1
+          }
+        },
+        "PB": {
+          "description": "Power Ballad",
+          "hourlyRequirement": {
+            "maximum": 2
+          }
+        }
       }
     },
-    "music_sets": {
-      "first_two_sets": {
-        "patterns": [
-          {
-            "name": "Pattern I",
-            "order": [
-              "I",
-              "Music",
-              "Jingle",
-              "Music",
-              "Music",
-              "Jingle",
-              "Music"
-            ],
-            "usage_constraints": {
-              "can_use_in_first_set": true,
-              "can_use_in_second_set": false,
-              "transition_rules": {
-                "G_or_SD_in_seventh": true,
-                "PB_or_M_in_seventh": true
+    "nonMusic": {
+      "TOH": {
+        "description": "Top of Hour Promo",
+        "position": "fixed",
+        "order": 2
+      },
+      "ID": {
+        "description": "Station ID Jingle",
+        "position": "fixed",
+        "order": 3
+      },
+      "J": {
+        "description": "Jingle",
+        "variants": {
+          "B": "Between",
+          "tM": "to Music"
+        }
+      }
+    }
+  },
+  "musicSets": {
+    "firstTwoSets": {
+      "patterns": {
+        "Pattern_I": {
+          "sequence": ["I", "Music", "Jingle", "Music", "Music", "Jingle", "Music"],
+          "rules": {
+            "usage": {
+              "maxPerHour": 1,
+              "preferredSet": "second",
+              "requiredWhen": {
+                "seventhElement": ["G", "SD"]
+              },
+              "allowedWhen": {
+                "firstSet": {
+                  "seventhElement": ["PB", "M"]
+                }
               }
             }
-          },
-          {
-            "name": "Pattern II",
-            "order": [
-              "I",
-              "Music",
-              "Music",
-              "Jingle",
-              "Music",
-              "Music",
-              "Music"
-            ],
-            "usage_constraints": {
-              "can_use_in_first_set": true,
-              "can_use_in_second_set": true
-            }
-          },
-          {
-            "name": "Pattern III",
-            "order": [
-              "I",
-              "Music",
-              "Music",
-              "Jingle",
-              "Music",
-              "Jingle",
-              "Music"
-            ],
-            "usage_constraints": {
-              "can_use_in_first_set": true,
-              "can_use_in_second_set": true
-            }
           }
-        ]
+        },
+        "Pattern_II": {
+          "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+        },
+        "Pattern_III": {
+          "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+        }
       },
-      "third_set": {
-        "order": [
-          "I",
-          "Music",
-          "Music",
-          "Jingle",
-          "Music (SP, SR, D, or Co)",
-          "PB"
-        ]
+      "rules": {
+        "noDuplicatePatterns": true,
+        "noDateBasedAfterJingle": true
       }
     },
-    "commercial_sets": {
-      "patterns": [
-        {
-          "name": "Pattern 631",
-          "order": ["60", "30", "15"]
-        },
-        {
-          "name": "Pattern 633",
-          "order": ["60", "30", "30"]
-        },
-        {
-          "name": "Pattern 613",
-          "order": ["60", "15", "30"]
-        },
-        {
-          "name": "Pattern 63",
-          "order": ["60", "30"]
-        },
-        {
-          "name": "Pattern 61",
-          "order": ["60", "15"]
-        },
-        {
-          "name": "Pattern 331",
-          "order": ["30", "30", "15"]
-        }
-      ],
-      "length_constraints": {
-        "total_duration_range": [75, 120],
-        "consecutive_sets_must_differ": true,
-        "hourly_requirements": {
-          "minimum_15_second_spots": 1,
-          "15_second_position": ["second", "third"]
-        }
+    "thirdSet": {
+      "sequence": ["I", "Music", "Jingle", "Music", "Music", "PB"],
+      "rules": {
+        "fifthPosition": ["SP", "SR", "SD", "SCo"],
+        "noDateBasedAfterJingle": true
       }
+    }
+  },
+  "commercialBreaks": {
+    "patterns": {
+      "631": {
+        "sequence": [60, 30, 15],
+        "duration": 105
+      },
+      "633": {
+        "sequence": [60, 30, 30],
+        "duration": 120
+      },
+      "613": {
+        "sequence": [60, 15, 30],
+        "duration": 105
+      },
+      "63": {# Remove new directories we created that we don't need yet
+      rm -rf src/config src/validation/ruleEngine
+      
+      # Remove new files we created prematurely
+      rm -f src/models/{categoryRule,commercialBreak,musicSet}.ts src/services/{patternSelector,rotationBuilder,rotationValidator}.ts
+      
+      # Remove all empty directories in src/validation
+      find src/validation -type d -empty -delete
+      
+      # Remove new test files and directories
+      rm -rf tests/unit/config tests/unit/validation
+      rm -f tests/unit/models/{categoryRule,commercialBreak,musicSet}.test.ts tests/unit/services/{patternSelector,rotationBuilder,rotationValidator}.test.ts
+      
+      # Remove empty test directories
+      find tests/unit -type d -empty -delete
+        "sequence": [60, 30],
+        "duration": 90
+      },
+      "61": {
+        "sequence": [60, 15],
+        "duration": 75
+      },
+      "331": {
+        "sequence": [30, 30, 15],
+        "duration": 75
+      }
+    },
+    "rules": {
+      "duration": {
+        "min": 75,
+        "max": 120
+      },
+      "hourlyRequirements": {
+        "fifteenSecondSpot": {
+          "minimum": 1,
+          "positions": ["second", "third"]
+        },
+        "differentLengths": true
+      }
+    }
+  },
+  "hourTemplate": {
+    "openingTrack": {
+      "allowedCategories": ["CE", "CM", "CL", "M"]
+    },
+    "sequence": [
+      "OpeningTrack",
+      "TOH",
+      "ID",
+      "MusicSet1",
+      "CommercialBreak1",
+      "MusicSet2", 
+      "CommercialBreak2",
+      "MusicSet3"
+    ]
+  },
+  "constructionSequence": [
+    {
+      "step": 1,
+      "action": "selectMusicPatterns",
+      "description": "Select patterns for music sets 1 and 2"
+    },
+    {
+      "step": 2,
+      "action": "selectCommercialPatterns",
+      "description": "Select patterns for commercial breaks 1 and 2"
+    },
+    {
+      "step": 3,
+      "action": "buildTemplate",
+      "description": "Build hour template with fixed elements"
+    },
+    {
+      "step": 4,
+      "action": "placeImageTracks",
+      "description": "Place all I category tracks"
+    },
+    {
+      "step": 5,
+      "action": "placeThirdSetPB",
+      "description": "Place PB track in set 3"
+    },
+    {
+      "step": 6,
+      "action": "placeSpecialTracks",
+      "description": "Place SD or G track if Pattern I is in use"
+    },
+    {
+      "step": 7,
+      "action": "placeSet1Special",
+      "description": "Place M or PB in set 1 if appropriate"
+    },
+    {
+      "step": 8,
+      "action": "placeCoreCategories",
+      "description": "Place remaining CE, CM, CL tracks"
+    },
+    {
+      "step": 9,
+      "action": "placeSpecialtyCategories",
+      "description": "Place SCo or SCh tracks"
+    },
+    {
+      "step": 10,
+      "action": "fillRemaining",
+      "description": "Place SP, SR and remaining categories"
+    }
+  ],
+  "validationRules": {
+    "hourRequirements": {
+      "CE": 2,
+      "CM": 2,
+      "CL": 2,
+      "M": {"min": 1, "max": 2},
+      "G": {"min": 1, "max": 2},
+      "PB": {"max": 2},
+      "SD": {"max": 1}
+    },
+    "specialtyRequirements": {
+      "options": [
+        {"SCo": 2},
+        {"SCo": 1, "SCh": 1}
+      ]
+    },
+    "placement": {
+      "noDateBasedAfterJingle": true,
+      "noConsecutiveDateBased": true,
+      "noConsecutiveSpecialty": true,
+      "requireSeparator": true
     }
   }
 }
