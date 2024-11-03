@@ -113,7 +113,15 @@
     "firstTwoSets": {
       "patterns": {
         "Pattern_I": {
-          "sequence": ["I", "Music", "Jingle", "Music", "Music", "Jingle", "Music"],
+          "sequence": [
+            "I",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music"
+          ],
           "rules": {
             "usage": {
               "maxPerHour": 1,
@@ -130,10 +138,26 @@
           }
         },
         "Pattern_II": {
-          "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+          "sequence": [
+            "I",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Music"
+          ]
         },
         "Pattern_III": {
-          "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+          "sequence": [
+            "I",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Music"
+          ]
         }
       },
       "rules": {
@@ -163,21 +187,7 @@
         "sequence": [60, 15, 30],
         "duration": 105
       },
-      "63": {# Remove new directories we created that we don't need yet
-      rm -rf src/config src/validation/ruleEngine
-      
-      # Remove new files we created prematurely
-      rm -f src/models/{categoryRule,commercialBreak,musicSet}.ts src/services/{patternSelector,rotationBuilder,rotationValidator}.ts
-      
-      # Remove all empty directories in src/validation
-      find src/validation -type d -empty -delete
-      
-      # Remove new test files and directories
-      rm -rf tests/unit/config tests/unit/validation
-      rm -f tests/unit/models/{categoryRule,commercialBreak,musicSet}.test.ts tests/unit/services/{patternSelector,rotationBuilder,rotationValidator}.test.ts
-      
-      # Remove empty test directories
-      find tests/unit -type d -empty -delete
+      "63": {
         "sequence": [60, 30],
         "duration": 90
       },
@@ -214,7 +224,7 @@
       "ID",
       "MusicSet1",
       "CommercialBreak1",
-      "MusicSet2", 
+      "MusicSet2",
       "CommercialBreak2",
       "MusicSet3"
     ]
@@ -276,16 +286,13 @@
       "CE": 2,
       "CM": 2,
       "CL": 2,
-      "M": {"min": 1, "max": 2},
-      "G": {"min": 1, "max": 2},
-      "PB": {"max": 2},
-      "SD": {"max": 1}
+      "M": { "min": 1, "max": 2 },
+      "G": { "min": 1, "max": 2 },
+      "PB": { "max": 2 },
+      "SD": { "max": 1 }
     },
     "specialtyRequirements": {
-      "options": [
-        {"SCo": 2},
-        {"SCo": 1, "SCh": 1}
-      ]
+      "options": [{ "SCo": 2 }, { "SCo": 1, "SCh": 1 }]
     },
     "placement": {
       "noDateBasedAfterJingle": true,

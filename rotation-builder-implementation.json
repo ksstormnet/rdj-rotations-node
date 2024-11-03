@@ -1,0 +1,236 @@
+{
+  "className": "RotationBuilder",
+  "purpose": "Build valid rotations by applying rules and patterns sequentially",
+  "dependencies": {
+    "required": [
+      "RuleManager",
+      "PatternManager",
+      "ValidationManager",
+      "ScheduleAnalyzer",
+      "src/models/rotationCodes.ts"
+    ]
+  },
+
+  "implementation": {
+    "buildingSequence": [
+      {
+        "step": 1,
+        "action": "openingSequence",
+        "tasks": [
+          "Select opening track (CE, CM, CL, M)",
+          "Add TOH promo",
+          "Add station ID"
+        ]
+      },
+      {
+        "step": 2,
+        "action": "selectPatterns",
+        "tasks": [
+          "Choose patterns for first two sets",
+          "Validate pattern combination",
+          "Select commercial break patterns"
+        ]
+      },
+      {
+        "step": 3,
+        "action": "placeRequiredElements",
+        "tasks": [
+          "Place all I tracks",
+          "Place PB in third set",
+          "Place jingles according to patterns"
+        ]
+      },
+      {
+        "step": 4,
+        "action": "assignDateBasedCategories",
+        "tasks": [
+          "Place remaining CE (2 total)",
+          "Place remaining CM (2 total)",
+          "Place remaining CL (2 total)",
+          "Place M and G (1-2 each, not both 2)"
+        ],
+        "constraints": [
+          "No consecutive date-based",
+          "One category between repeats",
+          "None after jingles"
+        ]
+      },
+      {
+        "step": 5,
+        "action": "assignSpecialtyCategories",
+        "tasks": [
+          "Place SCo and SCh according to rules",
+          "Ensure third set position 5 compliance"
+        ]
+      },
+      {
+        "step": 6,
+        "action": "fillRemainingSlots",
+        "tasks": [
+          "Fill with SP and SR",
+          "Validate final sequence"
+        ]
+      }
+    ],
+
+    "publicMethods": [
+      {
+        "name": "buildRotation",
+        "purpose": "Create new complete rotation",
+        "returns": "Rotation",
+        "parameters": ["name: string", "options?: BuildOptions"]
+      },
+      {
+        "name": "modifyRotation",
+        "purpose": "Fix violations in existing rotation",
+        "returns": "Rotation",
+        "parameters": ["rotation: Rotation", "violations: Violation[]"]
+      },
+      {
+        "name": "suggestAlternatives",
+        "purpose": "Suggest alternative valid arrangements",
+        "returns": "RotationSuggestion[]",
+        "parameters": ["rotation: Rotation"]
+      }
+    ],
+
+    "privateMethods": [
+      {
+        "name": "backtrackAndRetry",
+        "purpose": "Attempt alternative solutions when constraints fail"
+      },
+      {
+        "name": "validateBuildStep",
+        "purpose": "Check partial rotation validity during building"
+      },
+      {
+        "name": "generateCandidateList",
+        "purpose": "Create list of valid options for position"
+      }
+    ],
+
+    "buildStrategies": {
+      "constraintSatisfaction": {
+        "approach": "Backtracking with forward checking",
+        "optimizations": [
+          "Most constrained variable first",
+          "Least constraining value",
+          "Constraint propagation"
+        ]
+      },
+      "validation": {
+        "frequency": "After each placement",
+        "scope": "Affected constraints only",
+        "failureHandling": "Backtrack to last valid state"
+      }
+    }
+  },
+
+  "testPlan": {
+    "unitTests": [
+      {
+        "group": "Opening Sequence",
+        "tests": [
+          "should select valid opening track",
+          "should place TOH and ID correctly",
+          "should validate opening sequence"
+        ]
+      },
+      {
+        "group": "Pattern Selection",
+        "tests": [
+          "should select compatible patterns",
+          "should place commercial breaks correctly",
+          "should validate pattern requirements"
+        ]
+      },
+      {
+        "group": "Category Placement",
+        "tests": [
+          "should place required categories",
+          "should respect spacing rules",
+          "should handle specialty categories",
+          "should fill remaining slots appropriately"
+        ]
+      }
+    ],
+    "integrationTests": [
+      "should build complete valid rotation",
+      "should modify invalid rotation successfully",
+      "should handle all rule combinations"
+    ]
+  },
+
+  "errorHandling": {
+    "strategy": "Step-by-step validation with rollback capability",
+    "errorTypes": {
+      "BuildError": {
+        "properties": [
+          "step: string",
+          "attempt: number",
+          "constraints: string[]",
+          "failureReason: string"
+        ]
+      },
+      "NoSolutionError": {
+        "properties": [
+          "attemptedSolutions: number",
+          "constraintViolations: Violation[]",
+          "suggestedRelaxation: Constraint[]"
+        ]
+      }
+    }
+  },
+
+  "logging": {
+    "levels": {
+      "ERROR": [
+        "Build failures",
+        "Constraint violations",
+        "Backtracking failures"
+      ],
+      "WARN": [
+        "Multiple backtrack attempts",
+        "Pattern adjustments",
+        "Complex constraint resolution"
+      ],
+      "INFO": [
+        "Build progress",
+        "Pattern selections",
+        "Category placements"
+      ],
+      "DEBUG": [
+        "Constraint checking",
+        "Candidate generation",
+        "Backtracking decisions"
+      ]
+    }
+  },
+
+  "acceptanceCriteria": [
+    {
+      "scenario": "New Rotation Creation",
+      "given": "Valid rule configuration",
+      "when": "Building new rotation",
+      "then": "Should create compliant rotation"
+    },
+    {
+      "scenario": "Rotation Modification",
+      "given": "Rotation with violations",
+      "when": "Attempting to fix violations",
+      "then": "Should suggest valid modifications"
+    },
+    {
+      "scenario": "Pattern Compatibility",
+      "given": "Selected patterns",
+      "when": "Building rotation",
+      "then": "Should ensure pattern requirements are met"
+    },
+    {
+      "scenario": "Category Distribution",
+      "given": "Category requirements",
+      "when": "Placing categories",
+      "then": "Should meet all frequency and spacing rules"
+    }
+  ]
+}
