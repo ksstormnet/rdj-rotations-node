@@ -1,0 +1,304 @@
+{
+  "categories": {
+    "music": {
+      "image": {
+        "code": "I",
+        "description": "Image - Always begins a music set"
+      },
+      "dateBased": {
+        "G": {
+          "description": "Gold - Pre-1978",
+          "hourlyRequirement": {
+            "minimum": 1,
+            "maximum": 2,
+            "bothMaximumNotAllowedWith": "M"
+          }
+        },
+        "CE": {
+          "description": "Core Early - 1978-1983",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "CM": {
+          "description": "Core Mid - 1984-1988",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "CL": {
+          "description": "Core Late - 1989-1993",
+          "hourlyRequirement": {
+            "exact": 2,
+            "rules": ["noConsecutive", "requireDifferentBetweenReuse"]
+          }
+        },
+        "M": {
+          "description": "Modern - Post-1994",
+          "hourlyRequirement": {
+            "minimum": 1,
+            "maximum": 2,
+            "bothMaximumNotAllowedWith": "G"
+          }
+        }
+      },
+      "soundBased": {
+        "SCo": {
+          "description": "Country",
+          "hourlyRequirement": {
+            "options": [
+              {
+                "count": 2,
+                "restrictions": ["noConsecutiveWithSCh"]
+              },
+              {
+                "count": 1,
+                "mustBeWithSCh": true
+              }
+            ]
+          }
+        },
+        "SCh": {
+          "description": "Christian",
+          "hourlyRequirement": {
+            "typical": 1,
+            "restrictions": ["noConsecutiveWithSCo"]
+          }
+        },
+        "SP": {
+          "description": "Pop",
+          "usage": "filler"
+        },
+        "SR": {
+          "description": "Rock",
+          "usage": "filler"
+        },
+        "SD": {
+          "description": "Disco/Bubblegum",
+          "hourlyRequirement": {
+            "maximum": 1
+          }
+        },
+        "PB": {
+          "description": "Power Ballad",
+          "hourlyRequirement": {
+            "maximum": 2
+          }
+        }
+      }
+    },
+    "nonMusic": {
+      "TOH": {
+        "description": "Top of Hour Promo",
+        "position": "fixed",
+        "order": 2
+      },
+      "ID": {
+        "description": "Station ID Jingle",
+        "position": "fixed",
+        "order": 3
+      },
+      "J": {
+        "description": "Jingle",
+        "variants": {
+          "B": "Between",
+          "tM": "to Music"
+        }
+      }
+    }
+  },
+  "musicSets": {
+    "firstTwoSets": {
+      "patterns": {
+        "Pattern_I": {
+          "sequence": [
+            "I",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music"
+          ],
+          "rules": {
+            "usage": {
+              "maxPerHour": 1,
+              "preferredSet": "second",
+              "requiredWhen": {
+                "seventhElement": ["G", "SD"]
+              },
+              "allowedWhen": {
+                "firstSet": {
+                  "seventhElement": ["PB", "M"]
+                }
+              }
+            }
+          }
+        },
+        "Pattern_II": {
+          "sequence": [
+            "I",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Music"
+          ]
+        },
+        "Pattern_III": {
+          "sequence": [
+            "I",
+            "Music",
+            "Music",
+            "Jingle",
+            "Music",
+            "Music",
+            "Music"
+          ]
+        }
+      },
+      "rules": {
+        "noDuplicatePatterns": true,
+        "noDateBasedAfterJingle": true
+      }
+    },
+    "thirdSet": {
+      "sequence": ["I", "Music", "Jingle", "Music", "Music", "PB"],
+      "rules": {
+        "fifthPosition": ["SP", "SR", "SD", "SCo"],
+        "noDateBasedAfterJingle": true
+      }
+    }
+  },
+  "commercialBreaks": {
+    "patterns": {
+      "631": {
+        "sequence": [60, 30, 15],
+        "duration": 105
+      },
+      "633": {
+        "sequence": [60, 30, 30],
+        "duration": 120
+      },
+      "613": {
+        "sequence": [60, 15, 30],
+        "duration": 105
+      },
+      "63": {
+        "sequence": [60, 30],
+        "duration": 90
+      },
+      "61": {
+        "sequence": [60, 15],
+        "duration": 75
+      },
+      "331": {
+        "sequence": [30, 30, 15],
+        "duration": 75
+      }
+    },
+    "rules": {
+      "duration": {
+        "min": 75,
+        "max": 120
+      },
+      "hourlyRequirements": {
+        "fifteenSecondSpot": {
+          "minimum": 1,
+          "positions": ["second", "third"]
+        },
+        "differentLengths": true
+      }
+    }
+  },
+  "hourTemplate": {
+    "openingTrack": {
+      "allowedCategories": ["CE", "CM", "CL", "M"]
+    },
+    "sequence": [
+      "OpeningTrack",
+      "TOH",
+      "ID",
+      "MusicSet1",
+      "CommercialBreak1",
+      "MusicSet2",
+      "CommercialBreak2",
+      "MusicSet3"
+    ]
+  },
+  "constructionSequence": [
+    {
+      "step": 1,
+      "action": "selectMusicPatterns",
+      "description": "Select patterns for music sets 1 and 2"
+    },
+    {
+      "step": 2,
+      "action": "selectCommercialPatterns",
+      "description": "Select patterns for commercial breaks 1 and 2"
+    },
+    {
+      "step": 3,
+      "action": "buildTemplate",
+      "description": "Build hour template with fixed elements"
+    },
+    {
+      "step": 4,
+      "action": "placeImageTracks",
+      "description": "Place all I category tracks"
+    },
+    {
+      "step": 5,
+      "action": "placeThirdSetPB",
+      "description": "Place PB track in set 3"
+    },
+    {
+      "step": 6,
+      "action": "placeSpecialTracks",
+      "description": "Place SD or G track if Pattern I is in use"
+    },
+    {
+      "step": 7,
+      "action": "placeSet1Special",
+      "description": "Place M or PB in set 1 if appropriate"
+    },
+    {
+      "step": 8,
+      "action": "placeCoreCategories",
+      "description": "Place remaining CE, CM, CL tracks"
+    },
+    {
+      "step": 9,
+      "action": "placeSpecialtyCategories",
+      "description": "Place SCo or SCh tracks"
+    },
+    {
+      "step": 10,
+      "action": "fillRemaining",
+      "description": "Place SP, SR and remaining categories"
+    }
+  ],
+  "validationRules": {
+    "hourRequirements": {
+      "CE": 2,
+      "CM": 2,
+      "CL": 2,
+      "M": { "min": 1, "max": 2 },
+      "G": { "min": 1, "max": 2 },
+      "PB": { "max": 2 },
+      "SD": { "max": 1 }
+    },
+    "specialtyRequirements": {
+      "options": [{ "SCo": 2 }, { "SCo": 1, "SCh": 1 }]
+    },
+    "placement": {
+      "noDateBasedAfterJingle": true,
+      "noConsecutiveDateBased": true,
+      "noConsecutiveSpecialty": true,
+      "requireSeparator": true
+    }
+  }
+}

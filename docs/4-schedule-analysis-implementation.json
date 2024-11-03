@@ -1,0 +1,236 @@
+{
+  "className": "ScheduleAnalyzer",
+  "purpose": "Analyze rotation violations and provide detailed resolution guidance",
+  "dependencies": {
+    "required": [
+      "RuleManager",
+      "PatternManager",
+      "ValidationManager",
+      "src/models/rotationCodes.ts"
+    ]
+  },
+
+  "implementation": {
+    "analysisModes": [
+      {
+        "name": "rotationAnalysis",
+        "purpose": "Check existing rotation for compliance",
+        "outputs": [
+          "Compliance status",
+          "List of violations",
+          "Resolution suggestions"
+        ]
+      },
+      {
+        "name": "positionAnalysis",
+        "purpose": "Analyze specific position constraints",
+        "outputs": [
+          "Available categories",
+          "Blocking rules",
+          "Alternative suggestions"
+        ]
+      },
+      {
+        "name": "constraintAnalysis",
+        "purpose": "Identify which rules are creating conflicts",
+        "outputs": [
+          "Conflicting rules",
+          "Impact assessment",
+          "Possible resolutions"
+        ]
+      }
+    ],
+
+    "publicMethods": [
+      {
+        "name": "analyzeRotation",
+        "purpose": "Complete analysis of rotation compliance",
+        "parameters": ["rotationName: string"],
+        "returns": "RotationAnalysis",
+        "details": {
+          "checks": [
+            "Pattern compliance",
+            "Category frequencies",
+            "Position constraints",
+            "Commercial break rules"
+          ],
+          "output": {
+            "isCompliant": "boolean",
+            "violations": "Violation[]",
+            "suggestions": "Resolution[]"
+          }
+        }
+      },
+      {
+        "name": "analyzePosition",
+        "purpose": "Analyze specific position constraints",
+        "parameters": [
+          "rotationName: string",
+          "position: number"
+        ],
+        "returns": "PositionAnalysis",
+        "details": {
+          "analyzes": [
+            "Valid categories for position",
+            "Rules preventing categories",
+            "Alternative options"
+          ]
+        }
+      },
+      {
+        "name": "identifyConstraints",
+        "purpose": "Find rules causing specific violations",
+        "parameters": [
+          "rotation: string",
+          "violation: Violation"
+        ],
+        "returns": "ConstraintAnalysis"
+      }
+    ],
+
+    "privateMethods": [
+      {
+        "name": "buildConstraintGraph",
+        "purpose": "Create graph of rule relationships"
+      },
+      {
+        "name": "findBlockingRules",
+        "purpose": "Identify rules preventing category placement"
+      },
+      {
+        "name": "generateAlternatives",
+        "purpose": "Find alternative solutions"
+      }
+    ]
+  },
+
+  "analysisTypes": {
+    "RotationAnalysis": {
+      "overallStatus": "boolean",
+      "violations": "Violation[]",
+      "resolutions": {
+        "perViolation": "Resolution[]",
+        "globalSuggestions": "string[]"
+      }
+    },
+    "PositionAnalysis": {
+      "allowedCategories": "CategoryCode[]",
+      "blockingRules": {
+        "ruleId": "string",
+        "reason": "string",
+        "affectedCategories": "CategoryCode[]"
+      },
+      "alternatives": "Alternative[]"
+    },
+    "ConstraintAnalysis": {
+      "primaryConstraint": "string",
+      "relatedConstraints": "string[]",
+      "impact": "ConstraintImpact",
+      "possibleResolutions": "Resolution[]"
+    }
+  },
+
+  "testPlan": {
+    "unitTests": [
+      {
+        "group": "Rotation Analysis",
+        "tests": [
+          "should identify all violations in rotation",
+          "should provide clear resolution steps",
+          "should detect pattern conflicts"
+        ]
+      },
+      {
+        "group": "Position Analysis",
+        "tests": [
+          "should list all valid categories for position",
+          "should explain category restrictions",
+          "should suggest alternatives"
+        ]
+      },
+      {
+        "group": "Constraint Analysis",
+        "tests": [
+          "should identify conflicting rules",
+          "should assess rule impact",
+          "should provide resolution options"
+        ]
+      }
+    ],
+    "integrationTests": [
+      "should work with actual rotation data",
+      "should provide accurate analysis of known issues"
+    ]
+  },
+
+  "errorHandling": {
+    "strategy": "Provide maximum information for resolution",
+    "errorTypes": {
+      "AnalysisError": {
+        "properties": [
+          "rotationName: string",
+          "analysisType: string",
+          "error: string",
+          "context: any"
+        ]
+      },
+      "ConstraintResolutionError": {
+        "properties": [
+          "constraint: string",
+          "position: string",
+          "attempts: string[]",
+          "reason: string"
+        ]
+      }
+    }
+  },
+
+  "logging": {
+    "levels": {
+      "ERROR": [
+        "Analysis failures",
+        "Unresolvable conflicts",
+        "Data access errors"
+      ],
+      "WARN": [
+        "Complex constraint situations",
+        "Multiple resolution paths"
+      ],
+      "INFO": [
+        "Analysis results",
+        "Resolution suggestions"
+      ],
+      "DEBUG": [
+        "Constraint evaluation steps",
+        "Rule application sequence"
+      ]
+    }
+  },
+
+  "acceptanceCriteria": [
+    {
+      "scenario": "Rotation Compliance Check",
+      "given": "An existing rotation 'Hr A'",
+      "when": "Analyzing for compliance",
+      "then": "Should list all violations with clear explanations"
+    },
+    {
+      "scenario": "Position Constraint Analysis",
+      "given": "A specific position in rotation",
+      "when": "Analyzing available options",
+      "then": "Should show valid categories and explain restrictions"
+    },
+    {
+      "scenario": "Resolution Guidance",
+      "given": "A rule violation",
+      "when": "Requesting resolution options",
+      "then": "Should provide actionable steps to resolve"
+    },
+    {
+      "scenario": "Pattern Conflict Analysis",
+      "given": "Conflicting pattern requirements",
+      "when": "Analyzing constraints",
+      "then": "Should identify specific conflicting rules"
+    }
+  ]
+}

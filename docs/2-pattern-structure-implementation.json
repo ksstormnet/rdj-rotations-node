@@ -1,0 +1,202 @@
+{
+  "className": "PatternManager",
+  "purpose": "Define, validate, and manage music set and commercial break patterns",
+  "dependencies": {
+    "required": [
+      "RuleManager",
+      "src/models/rotationCodes.ts"
+    ]
+  },
+
+  "implementation": {
+    "constructionPhases": [
+      {
+        "phase": "Pattern Definition",
+        "components": [
+          {
+            "name": "MusicSetPattern",
+            "properties": [
+              "sequence: CategoryCode[]",
+              "allowedCategories: Map<number, CategoryCode[]>",
+              "requirements: PatternRequirement[]"
+            ],
+            "patterns": [
+              {
+                "name": "Pattern_I",
+                "sequence": ["I", "Music", "Jingle", "Music", "Music", "Jingle", "Music"]
+              },
+              {
+                "name": "Pattern_II",
+                "sequence": ["I", "Music", "Music", "Jingle", "Music", "Music", "Music"]
+              },
+              {
+                "name": "Third_Set",
+                "sequence": ["I", "Music", "Jingle", "Music", "Music", "PB"]
+              }
+            ]
+          },
+          {
+            "name": "CommercialPattern",
+            "properties": [
+              "sequence: number[]",
+              "duration: number",
+              "constraints: BreakConstraint[]"
+            ],
+            "patterns": ["631", "633", "613", "63", "61", "331"]
+          }
+        ]
+      },
+      {
+        "phase": "Pattern Validation",
+        "steps": [
+          "Validate pattern sequences",
+          "Check category placement rules",
+          "Verify timing constraints",
+          "Enforce cross-pattern rules"
+        ]
+      }
+    ],
+
+    "publicMethods": [
+      {
+        "name": "validateMusicSetPattern",
+        "purpose": "Check if a music set pattern is valid for position",
+        "parameters": ["pattern: MusicSetPattern", "position: number"],
+        "returns": "ValidationResult"
+      },
+      {
+        "name": "validateCommercialPattern",
+        "purpose": "Verify commercial break pattern validity",
+        "parameters": ["pattern: CommercialPattern", "previousPattern?: CommercialPattern"],
+        "returns": "ValidationResult"
+      },
+      {
+        "name": "getValidPatternsForPosition",
+        "purpose": "Get all valid patterns for a specific position",
+        "parameters": ["position: number", "constraints: PatternConstraint[]"],
+        "returns": "Pattern[]"
+      }
+    ],
+
+    "privateMethods": [
+      {
+        "name": "checkCategoryPlacement",
+        "purpose": "Verify category placement rules within pattern",
+        "returns": "PlacementValidation[]"
+      },
+      {
+        "name": "validatePatternCombination",
+        "purpose": "Check if patterns can be used together",
+        "returns": "boolean"
+      }
+    ]
+  },
+
+  "testPlan": {
+    "unitTests": [
+      {
+        "group": "Music Set Patterns",
+        "tests": [
+          "should validate Pattern I requirements",
+          "should enforce Pattern I usage rules",
+          "should validate Third Set specific rules",
+          "should prevent invalid category placements"
+        ]
+      },
+      {
+        "group": "Commercial Patterns",
+        "tests": [
+          "should validate break lengths",
+          "should enforce 15-second spot rules",
+          "should prevent duplicate break patterns"
+        ]
+      },
+      {
+        "group": "Pattern Combinations",
+        "tests": [
+          "should validate set pattern combinations",
+          "should check commercial break compatibility"
+        ]
+      }
+    ]
+  },
+
+  "errorHandling": {
+    "strategy": "Collect all violations before rejecting pattern",
+    "errorTypes": {
+      "PatternValidationError": {
+        "severity": "error",
+        "properties": [
+          "pattern: string",
+          "position: number",
+          "violations: Violation[]"
+        ]
+      },
+      "CategoryPlacementError": {
+        "severity": "error",
+        "properties": [
+          "category: CategoryCode",
+          "position: number",
+          "reason: string"
+        ]
+      },
+      "PatternCombinationError": {
+        "severity": "error",
+        "properties": [
+          "pattern1: string",
+          "pattern2: string",
+          "reason: string"
+        ]
+      }
+    }
+  },
+
+  "logging": {
+    "levels": {
+      "ERROR": [
+        "Pattern validation failures",
+        "Invalid category placements",
+        "Pattern combination conflicts"
+      ],
+      "WARN": [
+        "Unusual pattern combinations",
+        "Edge case validations"
+      ],
+      "INFO": [
+        "Pattern selection decisions",
+        "Validation successes"
+      ],
+      "DEBUG": [
+        "Pattern matching attempts",
+        "Constraint checking details"
+      ]
+    }
+  },
+
+  "acceptanceCriteria": [
+    {
+      "scenario": "Pattern I Validation",
+      "given": "Pattern I is selected",
+      "when": "Used in second set with Category G in seventh position",
+      "then": "Pattern should be validated as correct"
+    },
+    {
+      "scenario": "Commercial Break Validation",
+      "given": "Two commercial break patterns in an hour",
+      "when": "Patterns are different lengths and include 15-second spot",
+      "then": "Patterns should be validated as correct"
+    },
+    {
+      "scenario": "Third Set Validation",
+      "given": "Third set pattern",
+      "when": "Position 5 contains SP, SR, SD, or SCo",
+      "then": "Pattern should be validated as correct"
+    },
+    {
+      "scenario": "Category Placement",
+      "given": "A pattern with date-based category after jingle",
+      "when": "Validating the pattern",
+      "then": "Should return CategoryPlacementError"
+    }
+  ]
+}
